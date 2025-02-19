@@ -207,3 +207,5 @@ export default function History() {
     </div>
   )
 }
+
+//history page
