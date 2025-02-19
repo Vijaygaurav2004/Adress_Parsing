@@ -10,7 +10,11 @@ import { collection, addDoc, Timestamp } from "firebase/firestore"
 import { useAuth } from "@/contexts/AuthContext"
 import { useRouter } from "next/navigation"
 
-export default function AddressForm() {
+interface AddressFormProps {
+  onAddressParsed?: (parsedAddress: ParsedAddress) => void
+}
+
+export default function AddressForm({ onAddressParsed }: AddressFormProps) {
   const { user } = useAuth()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
@@ -42,8 +46,13 @@ export default function AddressForm() {
         original: address
       })
 
-      // Redirect to parsed address page
-      router.push(`/dashboard/parsed-address/${docRef.id}`)
+      // Call the callback if provided
+      if (onAddressParsed) {
+        onAddressParsed(parsedAddress)
+      } else {
+        // Redirect to parsed address page only if no callback provided
+        router.push(`/dashboard/parsed-address/${docRef.id}`)
+      }
     } catch (error: any) {
       console.error("Error saving address:", error)
       setError(error.message || "Failed to save address. Please try again.")
