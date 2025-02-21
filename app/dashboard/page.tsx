@@ -77,9 +77,8 @@ export default function Dashboard() {
       },
       complete: async (results) => {
         try {
-          const total = results.data.length
           let processed = 0
-          let errors: string[] = []
+          const errors: string[] = []
           const processedAddresses: ParsedAddress[] = []
 
           // First, validate and parse all rows

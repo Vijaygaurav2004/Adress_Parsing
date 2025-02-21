@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { FirebaseError } from "firebase/app";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -15,15 +16,15 @@ export default function SignUp() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Trim the email but don't convert to lowercase to maintain case sensitivity
       const trimmedEmail = email.trim();
       await createUserWithEmailAndPassword(auth, trimmedEmail, password);
       router.push("/login?message=Account created successfully! Please login with the exact email address you used to sign up.");
-    } catch (error: any) {
-      if (error.code === 'auth/email-already-in-use') {
+    } catch (error) {
+      const firebaseError = error as FirebaseError;
+      if (firebaseError.code === 'auth/email-already-in-use') {
         setError("An account with this email already exists. Please note that email addresses are case-sensitive.");
       } else {
-        setError(error.message);
+        setError(firebaseError.message);
       }
     }
   };
@@ -32,8 +33,9 @@ export default function SignUp() {
     try {
       await signInWithPopup(auth, googleProvider);
       router.push("/dashboard");
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      const firebaseError = error as FirebaseError;
+      setError(firebaseError.message);
     }
   };
 

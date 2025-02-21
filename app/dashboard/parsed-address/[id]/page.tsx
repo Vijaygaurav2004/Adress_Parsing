@@ -1,6 +1,5 @@
 import { Suspense } from "react"
 import ParsedAddressClient from "./ParsedAddressClient"
-import { Metadata } from "next"
 
 interface PageProps {
   params: {

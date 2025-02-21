@@ -18,4 +18,9 @@ export interface Society {
     id?: string
   }
   
+  export type FirebaseError = {
+    code: string;
+    message: string;
+  };
+  
   

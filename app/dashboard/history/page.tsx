@@ -1,16 +1,14 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { db } from "@/lib/firebase"
-import { collection, query, where, orderBy, getDocs, Timestamp, deleteDoc, doc } from "firebase/firestore"
+import { collection, query, where, orderBy, getDocs, deleteDoc, doc } from "firebase/firestore"
 import type { ParsedAddress } from "@/types"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Trash2, AlertTriangle, History as HistoryIcon } from "lucide-react"
-import CsvUploader from "@/components/CsvUploader"
-import { useRouter } from "next/navigation"
 
 export default function History() {
   const { user } = useAuth()
@@ -19,9 +17,8 @@ export default function History() {
   const [error, setError] = useState<string | null>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const router = useRouter()
 
-  const fetchHistory = async () => {
+  const fetchHistory = useCallback(async () => {
     if (!user) return
 
     try {
@@ -39,13 +36,13 @@ export default function History() {
       })) as ParsedAddress[]
 
       setAddressHistory(history)
-    } catch (error) {
-      console.error("Error fetching history:", error)
+    } catch (err) {
+      console.error("Error fetching history:", err)
       setError("Failed to load address history")
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
 
   const handleDeleteEntry = async (id: string) => {
     if (!user) return
@@ -86,7 +83,7 @@ export default function History() {
 
   useEffect(() => {
     fetchHistory()
-  }, [user])
+  }, [fetchHistory])
 
   if (loading) {
     return (

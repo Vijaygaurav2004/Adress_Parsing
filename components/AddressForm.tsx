@@ -22,7 +22,6 @@ export default function AddressForm({ onAddressParsed }: AddressFormProps) {
   const [latitude, setLatitude] = useState("")
   const [longitude, setLongitude] = useState("")
   const [address, setAddress] = useState("")
-  const [showParsedDetails, setShowParsedDetails] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,9 +52,10 @@ export default function AddressForm({ onAddressParsed }: AddressFormProps) {
         // Redirect to parsed address page only if no callback provided
         router.push(`/dashboard/parsed-address/${docRef.id}`)
       }
-    } catch (error: any) {
-      console.error("Error saving address:", error)
-      setError(error.message || "Failed to save address. Please try again.")
+    } catch (error) {
+      const err = error as Error
+      console.error("Error saving address:", err)
+      setError(err.message || "Failed to save address. Please try again.")
     } finally {
       setLoading(false)
     }

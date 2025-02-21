@@ -5,6 +5,7 @@ import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { FirebaseError } from "firebase/app";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -25,16 +26,15 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Trim the email but don't convert to lowercase to maintain case sensitivity
       const trimmedEmail = email.trim();
       await signInWithEmailAndPassword(auth, trimmedEmail, password);
       router.push("/dashboard");
-    } catch (error: any) {
-      // More user-friendly error message for case sensitivity
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+    } catch (error) {
+      const firebaseError = error as FirebaseError;
+      if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password') {
         setError("Invalid email or password. Please note that email addresses are case-sensitive.");
       } else {
-        setError(error.message);
+        setError(firebaseError.message);
       }
     }
   };
@@ -43,8 +43,9 @@ export default function Login() {
     try {
       await signInWithPopup(auth, googleProvider);
       router.push("/dashboard");
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      const firebaseError = error as FirebaseError;
+      setError(firebaseError.message);
     }
   };
 

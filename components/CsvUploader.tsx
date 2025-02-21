@@ -6,6 +6,17 @@ import { collection, addDoc, Timestamp } from "firebase/firestore"
 import { useAuth } from "@/contexts/AuthContext"
 import Papa from 'papaparse'
 
+// Move interface to types file if used elsewhere, or prefix with underscore if unused
+interface _CsvRow {
+  latitude?: string
+  lat?: string
+  longitude?: string
+  long?: string
+  lng?: string
+  address?: string
+  location?: string
+}
+
 export default function CsvUploader() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
@@ -32,9 +43,9 @@ export default function CsvUploader() {
         try {
           const total = results.data.length
           let processed = 0
-          let errors: string[] = []
+          const errors: string[] = []
 
-          for (const row of results.data as any[]) {
+          for (const row of results.data as _CsvRow[]) {
             try {
               // Handle different possible column names
               const lat = parseFloat(row.latitude || row.lat || '')
@@ -75,8 +86,8 @@ export default function CsvUploader() {
           }
 
           setProgress(100)
-        } catch (error: any) {
-          setError(error.message || "Failed to process CSV file")
+        } catch (error) {
+          setError(error instanceof Error ? error.message : "Failed to process CSV file")
         } finally {
           setLoading(false)
         }
