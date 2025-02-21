@@ -22,5 +22,6 @@ export const societies: Society[] = [
     blocks: ["A", "B"],
     flatsInEachBlock: ["101", "102", "201", "203"],
   },
+ 
 ]
 
